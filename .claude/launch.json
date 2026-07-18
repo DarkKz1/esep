@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "esep",
+      "runtimeExecutable": "netlify",
+      "runtimeArgs": ["dev", "--port", "8888"],
+      "port": 8888
+    }
+  ]
+}
