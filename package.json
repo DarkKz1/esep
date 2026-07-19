@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@netlify/blobs": "^8.1.0",
+    "dompurify": "^3.4.12",
     "marked": "^12.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

@@ -6,6 +6,55 @@ import { getStore } from '@netlify/blobs'
 
 const store = getStore('esep-reports')
 
+const AREAS = ['Economic Development', 'Health', 'Education & STEM', 'Environment', 'Disaster Preparedness', 'Community Support']
+const CITIES = ['Atyrau', 'Aktau', 'Aktobe', 'Astana', 'Almaty', 'Nationwide']
+const SEVERITIES = ['low', 'medium', 'high']
+
+// Портал публичный и self-serve (логина нет намеренно), поэтому POST должен быть БЕЗВРЕДЕН
+// при любом входе: вырезаем HTML-теги из всех строк (защита от stored-XSS в reportMarkdown),
+// приводим типы, режем длины. Даже сырой curl не сможет ни сломать рендер, ни внедрить скрипт.
+// Убираем только настоящие HTML-теги (<tag ...> / </tag>), НЕ трогая одиночный «<» в тексте.
+const TAG_RE = /<\/?[a-zA-Z][^>]*>/g
+const SCRIPTY_RE = /<\s*(script|style|iframe|object|embed)[\s\S]*?<\s*\/\s*\1\s*>/gi
+const stripTags = (s) => String(s ?? '').replace(SCRIPTY_RE, '').replace(TAG_RE, '')
+const clean = (s, max) => stripTags(s).slice(0, max).trim()
+const cleanMarkdown = (s) => String(s ?? '')
+  .replace(/<\s*(script|iframe|object|embed|style|link|meta)[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
+  .replace(TAG_RE, '')               // HTML-теги; markdown-синтаксис (#, |, *, > ) не трогается
+  .replace(/javascript:/gi, '')
+  .slice(0, 50000)
+const cleanInt = (n) => (Number.isInteger(n) && n >= 0 && n <= 100000000 ? n : null)
+const cleanArr = (a) => (Array.isArray(a) ? a : [])
+
+// Приводит любой (в т.ч. враждебный) payload к валидному, безопасному объекту report.
+function sanitizeReport(p) {
+  return {
+    org: clean(p.org, 160),
+    program: clean(p.program, 160),
+    programArea: AREAS.includes(p.programArea) ? p.programArea : 'Community Support',
+    donor: clean(p.donor || 'Chevron', 80),
+    period: clean(p.period, 80),
+    cities: cleanArr(p.cities).filter(c => CITIES.includes(c)).slice(0, 6),
+    metrics: {
+      peopleReached: cleanInt(p.metrics?.peopleReached),
+      events: cleanInt(p.metrics?.events),
+      budgetSpent: clean(p.metrics?.budgetSpent || '—', 60),
+    },
+    activities: cleanArr(p.activities).slice(0, 40).map(a => ({
+      date: clean(a?.date, 40), city: clean(a?.city, 40), desc: clean(a?.desc, 400),
+    })),
+    results: clean(p.results, 4000),
+    quotes: cleanArr(p.quotes).slice(0, 20).map(q => ({
+      text: clean(q?.text, 600), source: clean(q?.source, 120),
+    })),
+    risks: cleanArr(p.risks).slice(0, 20)
+      .map(r => ({ severity: SEVERITIES.includes(r?.severity) ? r.severity : 'medium', desc: clean(r?.desc, 600) }))
+      .filter(r => r.desc),
+    dataGaps: cleanArr(p.dataGaps).slice(0, 20).map(g => clean(g, 300)).filter(Boolean),
+    reportMarkdown: cleanMarkdown(p.reportMarkdown),
+  }
+}
+
 // Транслитерация не делаем — просто нормализуем строку в безопасный для id кусок:
 // нижний регистр, пробелы и спецсимволы → дефис, обрезка повторов/краёв.
 function slugify(str) {
@@ -78,13 +127,16 @@ export default async (req) => {
         })
       }
 
-      const { org, program, programArea } = payload || {}
-      if (!org || !program || !programArea) {
+      if (!payload || !payload.org || !payload.program) {
         return new Response(
-          JSON.stringify({ error: 'Обязательные поля: org, program, programArea' }),
+          JSON.stringify({ error: 'Обязательные поля: org, program' }),
           { status: 400, headers: { 'content-type': 'application/json' } },
         )
       }
+
+      // Полная санитизация входа — открытый POST не может навредить порталу.
+      const safe = sanitizeReport(payload)
+      const { org, program } = safe
 
       const all = await readAll()
       // Пересдача отчёта той же программы тем же НКО = замена, не дубль
@@ -92,10 +144,10 @@ export default async (req) => {
       const reports = all.filter(r => !(r.org === org && r.program === program))
 
       const report = {
-        ...payload,
-        id: payload.id || makeId(org, program, reports.length),
-        submittedAt: payload.submittedAt || new Date().toISOString(),
-        status: payload.status || 'submitted',
+        ...safe,
+        id: makeId(org, program, reports.length),
+        submittedAt: new Date().toISOString(),
+        status: 'submitted',
       }
 
       reports.unshift(report)

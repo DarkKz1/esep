@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
-import { marked } from 'marked'
+import { renderMarkdown } from './safeHtml.js'
 import { demoNotes, demoMeta, demoReport } from './demoData.js'
-
-marked.setOptions({ gfm: true, breaks: true })
 
 const nf = (n) => (n ?? 0).toLocaleString('ru-RU')
 const reach = (n) => (n == null ? '—' : n.toLocaleString('ru-RU'))
@@ -174,7 +172,7 @@ export default function SubmitFlow({ onSubmitted, onFeedback }) {
                   <ul>{draft.dataGaps.map((g, i) => <li key={i}>{g}</li>)}</ul>
                 </div>
               )}
-              <article className="report-body" dangerouslySetInnerHTML={{ __html: marked.parse(draft.reportMarkdown || '') }} />
+              <article className="report-body" dangerouslySetInnerHTML={{ __html: renderMarkdown(draft.reportMarkdown) }} />
             </div>
           )}
         </section>

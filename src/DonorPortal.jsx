@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { marked } from 'marked'
+import { renderMarkdown } from './safeHtml.js'
 import { computeSignals, buildDataRequests } from './insights.js'
 import { KZMap, AreaBars, QualityRing } from './Charts.jsx'
-
-marked.setOptions({ gfm: true, breaks: true })
 
 const KNOWN_CITIES = ['Atyrau', 'Aktau', 'Aktobe', 'Astana', 'Almaty']
 const AREAS = ['Economic Development', 'Health', 'Education & STEM', 'Environment', 'Disaster Preparedness', 'Community Support']
@@ -115,7 +113,7 @@ function ReportCard({ r, expanded, onToggle, highlight }) {
               <ul>{r.dataGaps.map((g, i) => <li key={i}>{g}</li>)}</ul>
             </div>
           )}
-          <div className="report-body" dangerouslySetInnerHTML={{ __html: marked.parse(r.reportMarkdown || '') }} />
+          <div className="report-body" dangerouslySetInnerHTML={{ __html: renderMarkdown(r.reportMarkdown) }} />
         </div>
       )}
     </article>
