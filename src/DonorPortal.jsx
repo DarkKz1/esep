@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { marked } from 'marked'
 import { computeSignals, buildDataRequests } from './insights.js'
+import { KZMap, AreaBars, QualityRing } from './Charts.jsx'
 
 marked.setOptions({ gfm: true, breaks: true })
 
@@ -53,14 +54,21 @@ function useCountUp(target, duration = 900) {
   return val
 }
 
-function StatTile({ label, value, raw, suffix = '', sub, tone }) {
+function StatTile({ label, value, raw, suffix = '', sub, tone, ring }) {
   const animated = useCountUp(typeof raw === 'number' ? raw : 0)
   const display = typeof raw === 'number' ? `${animated.toLocaleString('ru-RU')}${suffix}` : value
-  return (
-    <div className={`stat-tile ${tone || ''}`}>
+  const core = (
+    <>
       <div className="stat-value">{display}</div>
       <div className="stat-label">{label}</div>
       {sub && <div className="stat-sub">{sub}</div>}
+    </>
+  )
+  return (
+    <div className={`stat-tile ${tone || ''}`}>
+      {ring != null
+        ? <div className="stat-with-ring"><QualityRing value={ring} /><div>{core}</div></div>
+        : core}
     </div>
   )
 }
@@ -224,10 +232,15 @@ export default function DonorPortal({ reports, loading, newId, onFeedback }) {
             <StatTile label="Партнёров-НКО" raw={agg.orgs} />
             <StatTile label="Городов + нац. охват" raw={Object.keys(agg.cityCounts).length} sub={`+ ${agg.nationwide} nationwide`} />
             <StatTile label="Качество данных" raw={agg.quality} suffix="%" sub="отчётов без пробелов и высоких рисков"
-              tone={agg.quality >= 70 ? 'good' : 'warn'} />
+              tone={agg.quality >= 70 ? 'good' : 'warn'} ring={agg.quality} />
             <StatTile label="Открытых рисков" raw={agg.risks.high + agg.risks.medium + agg.risks.low}
               sub={`${agg.risks.high} высоких · ${agg.risks.medium} средних`}
               tone={agg.risks.high > 0 ? 'danger' : ''} />
+          </section>
+
+          <section className="viz-row">
+            <KZMap reports={reports} />
+            <AreaBars reports={reports} />
           </section>
 
           <DonorBrief reports={reports} />
