@@ -43,7 +43,7 @@ export default function App() {
     setNewId(report.id)
     window.location.hash = '#/'
     window.scrollTo({ top: 0 })
-    setTimeout(() => setNewId(null), 6000)
+    setTimeout(() => setNewId(null), 10000)
   }, [])
 
   const isSubmit = hash === '#/submit'
