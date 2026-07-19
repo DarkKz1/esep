@@ -177,6 +177,11 @@ html { scroll-behavior: smooth; }
 .cine-footer p { font-size: 13.5px; max-width: 62ch; line-height: 1.5; }
 .cine-footer-meta { font-size: 12.5px; color: rgba(247,244,236,0.45); margin-left: auto; }
 
+/* Тёмная шапка submit-страницы (связность с героем) */
+.submit-page { background: var(--paper); }
+.submit-topbar { background: var(--night); }
+.submit-body { padding-top: 8px; }
+
 @media (prefers-reduced-motion: reduce) {
   .rise { opacity: 1; transform: none; animation: none; }
   .cine-arrow { animation: none; }

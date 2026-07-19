@@ -73,19 +73,20 @@ export default function SubmitFlow({ onSubmitted, onFeedback }) {
   const busy = status === 'extracting' || status === 'sending'
 
   return (
-    <div className="app">
-      <header className="header no-print">
-        <div className="brand">
-          <span className="brand-mark">Esep</span>
-          <span className="brand-tag">Вход для НКО · сдать отчёт донору</span>
+    <div className="submit-page">
+      <header className="cine-header submit-topbar no-print">
+        <div className="cine-brand">
+          <span className="cine-mark">Esep</span>
+          <span className="cine-dot" aria-hidden="true" />
+          <span className="cine-brandtag">Вход для НКО</span>
         </div>
-        <nav className="top-nav">
-          <a className="nav-link" href="#/">← Портал донора</a>
-          <a className="nav-link active" href="#/submit">Сдать отчёт</a>
-          <button className="ghost-btn" onClick={onFeedback}>Отзыв</button>
+        <nav className="cine-nav">
+          <a className="cine-navlink" href="#/">← Портал донора</a>
+          <button className="cine-navbtn" onClick={onFeedback}>Отзыв</button>
         </nav>
       </header>
 
+      <div className="app submit-body">
       <section className="hero no-print">
         <h1>Полевой хаос → отчёт донору</h1>
         <p>
@@ -177,6 +178,7 @@ export default function SubmitFlow({ onSubmitted, onFeedback }) {
           )}
         </section>
       </main>
+      </div>
     </div>
   )
 }
