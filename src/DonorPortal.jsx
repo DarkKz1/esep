@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { renderMarkdown } from './safeHtml.js'
 import { computeSignals, buildDataRequests } from './insights.js'
 import { KZMap, AreaBars, QualityRing } from './Charts.jsx'
+import heroTopo from './assets/hero-topo.webp'
 
 const KNOWN_CITIES = ['Atyrau', 'Aktau', 'Aktobe', 'Astana', 'Almaty']
 const AREAS = ['Economic Development', 'Health', 'Education & STEM', 'Environment', 'Disaster Preparedness', 'Community Support']
@@ -50,6 +51,71 @@ function useCountUp(target, duration = 900) {
     return () => cancelAnimationFrame(raf)
   }, [target, duration])
   return val
+}
+
+// Параллакс фонового ассета героя + мягкое появление контента на маунте.
+function CineHero({ agg, onFeedback }) {
+  const reached = useCountUp(agg.totalReached, 1400)
+  const [off, setOff] = useState(0)
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return
+    let raf = 0
+    const onScroll = () => {
+      raf = raf || requestAnimationFrame(() => {
+        setOff(Math.min(window.scrollY, 600) * 0.18)
+        raf = 0
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf) }
+  }, [])
+
+  return (
+    <section className="cine-hero no-print">
+      <div className="cine-bg" style={{ backgroundImage: `url(${heroTopo})`, transform: `translate3d(0, ${off}px, 0) scale(1.08)` }} aria-hidden="true" />
+      <div className="cine-veil" aria-hidden="true" />
+
+      <header className="cine-header">
+        <div className="cine-brand">
+          <span className="cine-mark">Esep</span>
+          <span className="cine-dot" aria-hidden="true" />
+          <span className="cine-brandtag">Community Partnership Kazakhstan</span>
+        </div>
+        <nav className="cine-nav">
+          <a className="cine-navlink" href="#/submit">Сдать отчёт (НКО)</a>
+          <button className="cine-navbtn" onClick={onFeedback}>Отзыв</button>
+        </nav>
+      </header>
+
+      <div className="cine-inner">
+        <p className="cine-kicker rise" style={{ '--d': '0.05s' }}>Профинансировано Chevron · реализуется с локальными НКО</p>
+        <h1 className="cine-title rise" style={{ '--d': '0.12s' }}>Живая картина импакта</h1>
+        <p className="cine-sub rise" style={{ '--d': '0.2s' }}>
+          Партнёры сдают отчёты из полевых заметок. Портал сводит их в реальном времени,
+          считает риски и показывает, где не хватает данных. Недели ручной работы — за минуту.
+        </p>
+        <div className="cine-ledger rise" style={{ '--d': '0.28s' }}>
+          <span className="cl-item"><b>{reached.toLocaleString('ru-RU')}</b> человек охвачено</span>
+          <span className="cl-sep" aria-hidden="true" />
+          <span className="cl-item"><b>{agg.orgs}</b> НКО</span>
+          <span className="cl-sep" aria-hidden="true" />
+          <span className="cl-item"><b>{agg.programs}</b> программ</span>
+          <span className="cl-sep" aria-hidden="true" />
+          <span className="cl-item"><b>{Object.keys(agg.cityCounts).length}</b> городов</span>
+        </div>
+        <div className="cine-cta rise" style={{ '--d': '0.36s' }}>
+          <a className="btn-glow" href="#portfolio">Смотреть портфель</a>
+          <a className="btn-ghostlight" href="#/submit">Сдать отчёт как НКО</a>
+        </div>
+      </div>
+
+      <a className="cine-scroll rise" style={{ '--d': '0.5s' }} href="#portfolio" aria-label="К портфелю">
+        <span>портфель</span>
+        <span className="cine-arrow" aria-hidden="true" />
+      </a>
+    </section>
+  )
 }
 
 function StatTile({ label, value, raw, suffix = '', sub, tone, ring }) {
@@ -198,32 +264,17 @@ export default function DonorPortal({ reports, loading, newId, onFeedback }) {
       }), [reports])
 
   return (
-    <div className="app">
-      <header className="header no-print">
-        <div className="brand">
-          <span className="brand-mark">Esep</span>
-          <span className="brand-tag">Портал импакта · Community Partnership Kazakhstan</span>
-        </div>
-        <nav className="top-nav">
-          <a className="nav-link active" href="#/">Портал донора</a>
-          <a className="nav-link" href="#/submit">Сдать отчёт (НКО) →</a>
-          <button className="ghost-btn" onClick={onFeedback}>Отзыв</button>
-        </nav>
-      </header>
-
-      <section className="portal-hero no-print">
-        <div className="hero-kicker">FUNDED BY CHEVRON · DELIVERED WITH LOCAL PARTNERS</div>
-        <h1>Живая картина импакта — из отчётов партнёров, а не из презентаций</h1>
-        <p>
-          Каждый партнёр сдаёт отчёт из полевых заметок. Портал сводит их в реальном времени —
-          и подсвечивает, где данных не хватает и где риски. То, что раньше собиралось руками неделями.
-        </p>
-      </section>
+    <div className="cine-page">
+      <CineHero agg={agg} onFeedback={onFeedback} />
 
       {loading ? (
-        <main className="portal-loading">Загружаю отчёты партнёров…</main>
+        <main className="app portal-loading">Загружаю отчёты партнёров…</main>
       ) : (
-        <main>
+        <main className="app" id="portfolio">
+          <div className="portal-intro no-print">
+            <h2>Портфель программ</h2>
+            <p>Каждая карточка — отчёт партнёра. Числа сверху пересчитываются на каждом новом отчёте.</p>
+          </div>
           <section className="stats-row">
             <StatTile label="Человек охвачено" raw={agg.totalReached} sub="суммарно по программам" />
             <StatTile label="Программ" raw={agg.programs} />
@@ -301,11 +352,15 @@ export default function DonorPortal({ reports, loading, newId, onFeedback }) {
         </main>
       )}
 
-      <footer className="footer no-print">
-        <p>
-          Esep — портал сбора и агрегации импакта для доноров и их партнёров-НКО.
-          Демо-данные — 14 программ из портфеля Chevron Kazakhstan. Сделано за 63 часа на хакатоне nFactorial, июль 2026.
-        </p>
+      <footer className="cine-footer no-print">
+        <div className="cine-footer-inner">
+          <span className="cine-mark">Esep</span>
+          <p>
+            Портал сбора и агрегации импакта для доноров и их партнёров-НКО.
+            Демо-данные — 14 программ из портфеля Chevron Kazakhstan.
+          </p>
+          <span className="cine-footer-meta">Хакатон nFactorial · июль 2026</span>
+        </div>
       </footer>
     </div>
   )

@@ -28,6 +28,161 @@
 
 html { scroll-behavior: smooth; }
 
+/* ═════════ Кинематографичный тёмный герой (pivot-визуал) ═════════ */
+:root {
+  --night: #12140f;
+  --night-2: #191c15;
+  --glow: #7cc38f;
+  --cream-hi: #f7f4ec;
+  --z-header: 20;
+}
+
+.cine-page { background: var(--night); }
+
+.cine-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--night);
+  color: var(--cream-hi);
+}
+.cine-bg {
+  position: absolute; inset: -8% 0 -8% 0;
+  background-size: cover; background-position: center;
+  will-change: transform;
+}
+.cine-veil {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(120% 90% at 15% 30%, rgba(18,20,15,0.35) 0%, rgba(18,20,15,0.82) 55%, var(--night) 100%),
+    linear-gradient(180deg, rgba(18,20,15,0.5) 0%, rgba(18,20,15,0.1) 30%, rgba(18,20,15,0.75) 78%, var(--night) 100%);
+}
+
+/* Заголовок поверх героя */
+.cine-header {
+  position: relative; z-index: var(--z-header);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 26px clamp(20px, 5vw, 56px); gap: 16px; flex-wrap: wrap;
+}
+.cine-brand { display: flex; align-items: center; gap: 12px; }
+.cine-mark {
+  font-family: var(--font-display); font-weight: 700; font-size: 24px;
+  color: var(--cream-hi); letter-spacing: -0.5px;
+}
+.cine-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 10px var(--glow); }
+.cine-brandtag { font-size: 12.5px; color: rgba(247,244,236,0.6); letter-spacing: 0.02em; }
+.cine-nav { display: flex; align-items: center; gap: 10px; }
+.cine-navlink {
+  font-size: 13.5px; color: rgba(247,244,236,0.82); text-decoration: none;
+  padding: 8px 14px; border-radius: 9px; transition: background 0.2s, color 0.2s;
+}
+.cine-navlink:hover { background: rgba(247,244,236,0.08); color: var(--cream-hi); }
+.cine-navbtn {
+  font-family: var(--font-ui); font-size: 13.5px; cursor: pointer;
+  color: rgba(247,244,236,0.82); background: transparent;
+  border: 1px solid rgba(247,244,236,0.25); border-radius: 9px; padding: 8px 15px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.cine-navbtn:hover { border-color: var(--glow); color: var(--cream-hi); }
+
+/* Контент героя */
+.cine-inner {
+  position: relative; z-index: 5;
+  margin: auto 0; padding: 0 clamp(20px, 5vw, 56px);
+  max-width: 940px;
+}
+.cine-kicker {
+  font-size: clamp(11px, 1.4vw, 13px); font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--glow); margin-bottom: 22px;
+}
+.cine-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(44px, 8vw, 88px); line-height: 0.98; letter-spacing: -0.035em;
+  text-wrap: balance; color: var(--cream-hi);
+  text-shadow: 0 2px 40px rgba(0,0,0,0.5);
+}
+.cine-sub {
+  margin-top: 24px; max-width: 60ch;
+  font-size: clamp(16px, 2vw, 19px); line-height: 1.55;
+  color: rgba(247,244,236,0.82); text-wrap: pretty;
+}
+.cine-ledger {
+  margin-top: 30px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.cl-item { font-size: 14.5px; color: rgba(247,244,236,0.72); }
+.cl-item b {
+  font-family: var(--font-display); font-size: 21px; font-weight: 700;
+  color: var(--cream-hi); margin-right: 5px;
+}
+.cl-sep { width: 4px; height: 4px; border-radius: 50%; background: rgba(247,244,236,0.3); }
+
+.cine-cta { margin-top: 38px; display: flex; gap: 14px; flex-wrap: wrap; }
+.btn-glow {
+  font-size: 15px; font-weight: 600; text-decoration: none;
+  background: var(--glow); color: #10160f; padding: 14px 30px; border-radius: 11px;
+  box-shadow: 0 0 0 rgba(124,195,143,0.6); transition: box-shadow 0.3s, transform 0.15s;
+}
+.btn-glow:hover { box-shadow: 0 8px 34px rgba(124,195,143,0.4); transform: translateY(-1px); }
+.btn-ghostlight {
+  font-size: 15px; font-weight: 500; text-decoration: none;
+  color: var(--cream-hi); border: 1px solid rgba(247,244,236,0.3);
+  padding: 14px 26px; border-radius: 11px; transition: border-color 0.2s, background 0.2s;
+}
+.btn-ghostlight:hover { border-color: var(--glow); background: rgba(124,195,143,0.08); }
+
+/* Скролл-подсказка */
+.cine-scroll {
+  position: relative; z-index: 5;
+  display: flex; align-items: center; gap: 10px; align-self: flex-start;
+  margin: 0 0 34px clamp(20px, 5vw, 56px);
+  font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(247,244,236,0.55); text-decoration: none;
+}
+.cine-arrow {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid rgba(247,244,236,0.35); position: relative;
+  animation: nudge 1.8s ease-in-out infinite;
+}
+.cine-arrow::after {
+  content: ''; position: absolute; left: 50%; top: 46%;
+  width: 6px; height: 6px; border-right: 1px solid var(--glow); border-bottom: 1px solid var(--glow);
+  transform: translate(-50%,-50%) rotate(45deg);
+}
+@keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+/* Появление контента героя */
+.rise { opacity: 0; transform: translateY(18px); animation: rise 0.9s cubic-bezier(0.16,1,0.3,1) forwards; animation-delay: var(--d, 0s); }
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+/* Переход к светлому порталу */
+.portal-intro {
+  max-width: 1200px; margin: 0 auto; padding: 56px 24px 0;
+}
+.portal-intro h2 {
+  font-family: var(--font-display); font-size: clamp(24px, 3.5vw, 34px);
+  letter-spacing: -0.02em; margin-bottom: 8px;
+}
+.portal-intro p { font-size: 15.5px; color: var(--ink-soft); max-width: 60ch; }
+
+/* Тёмный футер-буквенник */
+.cine-footer { background: var(--night); color: rgba(247,244,236,0.7); margin-top: 60px; padding: 48px 24px; }
+.cine-footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap;
+}
+.cine-footer .cine-mark { font-size: 22px; }
+.cine-footer p { font-size: 13.5px; max-width: 62ch; line-height: 1.5; }
+.cine-footer-meta { font-size: 12.5px; color: rgba(247,244,236,0.45); margin-left: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { opacity: 1; transform: none; animation: none; }
+  .cine-arrow { animation: none; }
+  .cine-bg { transform: scale(1.08) !important; }
+}
+
 body {
   font-family: var(--font-ui);
   background: var(--paper);
