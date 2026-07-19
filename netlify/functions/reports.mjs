@@ -48,10 +48,22 @@ async function readAll() {
 export default async (req) => {
   try {
     if (req.method === 'GET') {
+      // Приватная чистка демо-стора к исходным 14 seed (?reseed=<токен>) — на случай, если
+      // во время демо накопились тестовые сабмиты. Токен зашит намеренно (проект демо-уровня).
+      const url = new URL(req.url)
+      if (url.searchParams.get('reseed') === 'esep-demo-2026') {
+        const { seedReports } = await import('../../src/seedData.js')
+        await store.setJSON('all', seedReports)
+        return new Response(JSON.stringify({ reports: seedReports, reseeded: true }), {
+          status: 200,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store, max-age=0' },
+        })
+      }
       const reports = await readAll()
       return new Response(JSON.stringify({ reports }), {
         status: 200,
-        headers: { 'content-type': 'application/json' },
+        // no-store: после сабмита портал должен сразу видеть новый отчёт (иначе кэш ломает вау-момент).
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store, max-age=0' },
       })
     }
 

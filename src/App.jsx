@@ -23,7 +23,7 @@ export default function App() {
 
   const loadReports = useCallback(async () => {
     try {
-      const res = await fetch('/api/reports')
+      const res = await fetch(`/api/reports?t=${Date.now()}`, { cache: 'no-store' })
       const data = await res.json()
       setReports(data.reports || [])
     } catch {
