@@ -86,7 +86,10 @@ export default async (req) => {
         )
       }
 
-      const reports = await readAll()
+      const all = await readAll()
+      // Пересдача отчёта той же программы тем же НКО = замена, не дубль
+      // (иначе повторные прогоны демо плодили бы копии).
+      const reports = all.filter(r => !(r.org === org && r.program === program))
 
       const report = {
         ...payload,
