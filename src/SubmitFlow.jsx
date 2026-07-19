@@ -66,7 +66,7 @@ export default function SubmitFlow({ onSubmitted, onFeedback }) {
       })
       if (!res.ok) throw new Error('Не удалось отправить отчёт донору.')
       const { report } = await res.json()
-      onSubmitted(report.id)   // редирект на портал с подсветкой
+      onSubmitted(report)   // отдаём весь отчёт: портал добавит его оптимистично, без гонки за re-fetch
     } catch (e) {
       setError(e.message); setStatus('error')
     }

@@ -35,15 +35,16 @@ export default function App() {
 
   useEffect(() => { loadReports() }, [loadReports])
 
-  // После отправки отчёта НКО — обновить список, подсветить новый, уйти на портал.
-  const handleSubmitted = useCallback(async (id) => {
-    setNewId(id)
-    setLoading(true)
-    await loadReports()
+  // После отправки отчёта НКО — добавить его в список ОПТИМИСТИЧНО и уйти на портал.
+  // Не делаем повторный GET: Netlify Blobs отдаёт свежую запись не мгновенно, поэтому
+  // полагаемся на объект, который вернул POST (он уже со всеми проставленными полями).
+  const handleSubmitted = useCallback((report) => {
+    setReports(prev => [report, ...prev.filter(r => r.id !== report.id)])
+    setNewId(report.id)
     window.location.hash = '#/'
     window.scrollTo({ top: 0 })
     setTimeout(() => setNewId(null), 6000)
-  }, [loadReports])
+  }, [])
 
   const isSubmit = hash === '#/submit'
 

@@ -1,0 +1,99 @@
+ ›   Warning: --build is now the default and can safely be omitted.
+​
+Netlify Build                                                 
+────────────────────────────────────────────────────────────────
+​
+❯ Version
+  @netlify/build 35.8.3
+​
+❯ Flags
+  accountId: 6992f7d1646d9972bdab9886
+  deployId: 6a5c7d506ffa5497fdfc3958
+​
+❯ Current directory
+  /Users/diyar/ngo-reports
+​
+❯ Config file
+  /Users/diyar/ngo-reports/netlify.toml
+​
+❯ Context
+  production
+​
+❯ Installing extensions
+   - prerender
+​
+❯ Loading extensions
+   - prerender
+​
+build.command from netlify.toml                               
+────────────────────────────────────────────────────────────────
+​
+$ npm run build
+
+> esep@0.1.0 build
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 36 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   1.47 kB │ gzip:  0.95 kB
+dist/assets/index-BCRfoPK1.css   12.21 kB │ gzip:  3.17 kB
+dist/assets/index-DDLYacH1.js   201.04 kB │ gzip: 65.63 kB
+✓ built in 459ms
+​
+(build.command completed in 902ms)
+​
+Functions bundling                                            
+────────────────────────────────────────────────────────────────
+​
+Packaging Functions from netlify/functions directory:
+ - extract.mjs
+ - generate.mjs
+ - reports.mjs
+​
+​
+(Functions bundling completed in 122ms)
+
+Deploying to Netlify
+────────────────────────────────────────────────────────────────
+
+Deploy path:        /Users/diyar/ngo-reports/dist
+Functions path:     /Users/diyar/ngo-reports/netlify/functions
+Configuration path: /Users/diyar/ngo-reports/netlify.toml
+
+⠋ Uploading blobs to deploy store...
+
+✔ Finished uploading blobs to deploy store
+⠋ Hashing files...
+⠋ Looking for a functions cache...
+✔ Deploying functions from cache (use --skip-functions-cache to override)
+✔ Finished hashing 4 files and 3 functions
+⠋ CDN diffing files...
+✔ CDN requesting 2 files and 1 functions
+⠋ Uploading 3 files
+✔ Finished uploading 3 assets
+⠋ Waiting for deploy to go live...
+✔ Deploy is live!
+​
+Netlify Build Complete                                        
+────────────────────────────────────────────────────────────────
+​
+(Netlify Build completed in 14.5s)
+
+🚀 Deploy complete
+────────────────────────────────────────────────────────────────
+
+╭────────────────────── ⬥  Production deploy is live ⬥  ───────────────────────╮
+│                                                                              │
+│           Deployed to production URL: https://esep-ngo.netlify.app           │
+│                                                                              │
+│                              Unique deploy URL:                              │
+│            https://6a5c7d506ffa5497fdfc3958--esep-ngo.netlify.app            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Build logs:         https://app.netlify.com/projects/esep-ngo/deploys/6a5c7d506ffa5497fdfc3958
+Function logs:      https://app.netlify.com/projects/esep-ngo/logs/functions
+Edge function Logs: https://app.netlify.com/projects/esep-ngo/logs/edge-functions
