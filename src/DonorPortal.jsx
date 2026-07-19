@@ -7,6 +7,8 @@ const KNOWN_CITIES = ['Atyrau', 'Aktau', 'Aktobe', 'Astana', 'Almaty']
 const AREAS = ['Economic Development', 'Health', 'Education & STEM', 'Environment', 'Disaster Preparedness', 'Community Support']
 
 const nf = (n) => (n ?? 0).toLocaleString('ru-RU')
+// Охват: null = «не сведено» (принцип «не выдумываем цифры»), НЕ ноль.
+const reach = (n) => (n == null ? '—' : n.toLocaleString('ru-RU'))
 
 function aggregate(reports) {
   const totalReached = reports.reduce((s, r) => s + (r.metrics?.peopleReached || 0), 0)
@@ -53,7 +55,7 @@ function ReportCard({ r, expanded, onToggle, highlight }) {
       </button>
 
       <div className="card-meta">
-        <span className="meta-num">{nf(r.metrics?.peopleReached)} <em>охват</em></span>
+        <span className="meta-num">{reach(r.metrics?.peopleReached)} <em>{r.metrics?.peopleReached == null ? 'охват не сведён' : 'охват'}</em></span>
         <span className="meta-cities">{(r.cities || []).join(' · ')}</span>
         <span className="meta-period">{r.period}</span>
       </div>

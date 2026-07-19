@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { marked } from 'marked'
-import { demoNotes, demoMeta } from './demoData.js'
+import { demoNotes, demoMeta, demoReport } from './demoData.js'
 
 marked.setOptions({ gfm: true, breaks: true })
 
 const nf = (n) => (n ?? 0).toLocaleString('ru-RU')
+const reach = (n) => (n == null ? '—' : n.toLocaleString('ru-RU'))
 
 export default function SubmitFlow({ onSubmitted, onFeedback }) {
   const [notes, setNotes] = useState('')
@@ -16,15 +17,26 @@ export default function SubmitFlow({ onSubmitted, onFeedback }) {
   const [draft, setDraft] = useState(null)      // извлечённый report до отправки
   const [status, setStatus] = useState('idle')  // idle | extracting | preview | sending | error
   const [error, setError] = useState('')
+  const [isDemo, setIsDemo] = useState(false)
 
   const fillDemo = () => {
     setNotes(demoNotes); setOrg(demoMeta.org); setProgram(demoMeta.program)
-    setDonor('Chevron'); setPeriod(demoMeta.period); setError('')
+    setDonor('Chevron'); setPeriod(demoMeta.period); setError(''); setIsDemo(true)
   }
 
   const extract = async () => {
     if (status === 'extracting') return
     setError(''); setStatus('extracting'); setDraft(null)
+
+    // Демо-режим: если заметки не менялись после «Заполнить демо-данными», проводим
+    // готовый структурированный отчёт локально — сквозной сценарий работает без Anthropic API.
+    if (isDemo && notes.trim() === demoNotes.trim()) {
+      await new Promise(r => setTimeout(r, 1400)) // имитация обработки, чтобы шаг был виден
+      setDraft({ ...demoReport })
+      setStatus('preview')
+      return
+    }
+
     try {
       const res = await fetch('/api/extract', {
         method: 'POST',
@@ -143,6 +155,7 @@ export default function SubmitFlow({ onSubmitted, onFeedback }) {
           {status === 'error' && (
             <div className="placeholder error no-print">
               <p>{error}</p>
+              <p className="placeholder-sub">Живой разбор произвольного текста требует активного AI-ключа. Хотите увидеть полный проход прямо сейчас — нажмите «Заполнить демо-данными» слева.</p>
               <button className="ghost-btn" onClick={() => setStatus(draft ? 'preview' : 'idle')}>Назад</button>
             </div>
           )}
@@ -150,7 +163,7 @@ export default function SubmitFlow({ onSubmitted, onFeedback }) {
           {status === 'preview' && draft && (
             <div className="draft">
               <div className="draft-metrics">
-                <span className="dm"><b>{nf(draft.metrics?.peopleReached)}</b> охват</span>
+                <span className="dm"><b>{reach(draft.metrics?.peopleReached)}</b> {draft.metrics?.peopleReached == null ? 'охват не сведён' : 'охват'}</span>
                 <span className="dm"><b>{(draft.cities || []).length}</b> город(а)</span>
                 <span className="dm"><b>{draft.activities?.length || 0}</b> мероприятий</span>
                 <span className={`dm ${draft.dataGaps?.length ? 'dm-warn' : 'dm-ok'}`}><b>{draft.dataGaps?.length || 0}</b> пробелов в данных</span>
