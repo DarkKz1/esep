@@ -4,8 +4,8 @@
   --paper: #faf8f3;
   --paper-raised: #ffffff;
   --ink: #1c1a16;
-  --ink-soft: #5c574d;
-  --ink-faint: #8a8478;
+  --ink-soft: #55503f;
+  --ink-faint: #6e6a5e;
   --line: #e4dfd4;
   --accent: #2f6b4f;
   --accent-deep: #24523d;
@@ -260,17 +260,17 @@ textarea { resize: vertical; line-height: 1.5; }
 }
 .brief-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
 .signal { border: 1px solid var(--line); border-radius: 10px; padding: 14px 15px; }
-.signal h4 { font-size: 13.5px; margin-bottom: 6px; }
+.signal h3 { font-size: 13.5px; margin-bottom: 6px; font-family: var(--font-ui); }
 .signal p { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
 .signal-action { font-size: 12px; font-weight: 600; margin-top: 9px; }
 .signal-risk { background: #fbf1ee; border-color: #e7c3b6; }
-.signal-risk h4, .signal-risk .signal-action { color: var(--danger); }
+.signal-risk h3, .signal-risk .signal-action { color: var(--danger); }
 .signal-gap { background: #faf6ec; border-color: #e7d9b4; }
-.signal-gap h4, .signal-gap .signal-action { color: #927415; }
+.signal-gap h3, .signal-gap .signal-action { color: #8a6d10; }
 .signal-info { background: #eef2f7; border-color: #c4d2e3; }
-.signal-info h4, .signal-info .signal-action { color: #35618f; }
+.signal-info h3, .signal-info .signal-action { color: #35618f; }
 .signal-good { background: #eff5f1; border-color: #c4dccd; }
-.signal-good h4 { color: var(--accent-deep); }
+.signal-good h3 { color: var(--accent-deep); }
 
 .requests { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
 .requests h3 { font-family: var(--font-display); font-size: 16px; margin-bottom: 4px; }

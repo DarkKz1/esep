@@ -136,7 +136,7 @@ function DonorBrief({ reports }) {
       <div className="brief-grid">
         {signals.map((s, i) => (
           <div key={i} className={`signal signal-${s.tone}`}>
-            <h4>{s.title}</h4>
+            <h3>{s.title}</h3>
             <p>{s.text}</p>
             {s.action && <div className="signal-action">→ {s.action}</div>}
           </div>
@@ -215,9 +215,9 @@ export default function DonorPortal({ reports, loading, newId, onFeedback }) {
       </section>
 
       {loading ? (
-        <div className="portal-loading">Загружаю отчёты партнёров…</div>
+        <main className="portal-loading">Загружаю отчёты партнёров…</main>
       ) : (
-        <>
+        <main>
           <section className="stats-row">
             <StatTile label="Человек охвачено" raw={agg.totalReached} sub="суммарно по программам" />
             <StatTile label="Программ" raw={agg.programs} />
@@ -257,15 +257,15 @@ export default function DonorPortal({ reports, loading, newId, onFeedback }) {
           <section className="portfolio">
             <div className="filters no-print">
               <div className="filter-group">
-                <label>Направление</label>
-                <select value={area} onChange={e => setArea(e.target.value)}>
+                <label htmlFor="filter-area">Направление</label>
+                <select id="filter-area" aria-label="Фильтр по направлению" value={area} onChange={e => setArea(e.target.value)}>
                   <option value="all">Все</option>
                   {AREAS.map(a => <option key={a} value={a}>{a}</option>)}
                 </select>
               </div>
               <div className="filter-group">
-                <label>Город</label>
-                <select value={city} onChange={e => setCity(e.target.value)}>
+                <label htmlFor="filter-city">Город</label>
+                <select id="filter-city" aria-label="Фильтр по городу" value={city} onChange={e => setCity(e.target.value)}>
                   <option value="all">Все</option>
                   {KNOWN_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                   <option value="Nationwide">Nationwide</option>
@@ -287,7 +287,7 @@ export default function DonorPortal({ reports, loading, newId, onFeedback }) {
               ))}
             </div>
           </section>
-        </>
+        </main>
       )}
 
       <footer className="footer no-print">
