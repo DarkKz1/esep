@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { marked } from 'marked'
+import { computeSignals, buildDataRequests } from './insights.js'
 
 marked.setOptions({ gfm: true, breaks: true })
 
@@ -30,10 +31,34 @@ function aggregate(reports) {
   return { totalReached, programs: programs.size, orgs: orgs.size, cityCounts, nationwide, risks, dataGapsCount, quality, perArea }
 }
 
-function StatTile({ label, value, sub, tone }) {
+// Плавный count-up к целевому числу (и при смене значения — напр. после нового сабмита).
+function useCountUp(target, duration = 900) {
+  const [val, setVal] = useState(0)
+  const fromRef = useRef(0)
+  useEffect(() => {
+    const from = fromRef.current
+    if (from === target) return
+    let raf
+    const t0 = performance.now()
+    const tick = (t) => {
+      const p = Math.min((t - t0) / duration, 1)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setVal(Math.round(from + (target - from) * eased))
+      if (p < 1) raf = requestAnimationFrame(tick)
+      else fromRef.current = target
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, duration])
+  return val
+}
+
+function StatTile({ label, value, raw, suffix = '', sub, tone }) {
+  const animated = useCountUp(typeof raw === 'number' ? raw : 0)
+  const display = typeof raw === 'number' ? `${animated.toLocaleString('ru-RU')}${suffix}` : value
   return (
     <div className={`stat-tile ${tone || ''}`}>
-      <div className="stat-value">{value}</div>
+      <div className="stat-value">{display}</div>
       <div className="stat-label">{label}</div>
       {sub && <div className="stat-sub">{sub}</div>}
     </div>
@@ -89,6 +114,63 @@ function ReportCard({ r, expanded, onToggle, highlight }) {
   )
 }
 
+function DonorBrief({ reports }) {
+  const signals = useMemo(() => computeSignals(reports), [reports])
+  const requests = useMemo(() => buildDataRequests(reports), [reports])
+  const [openReq, setOpenReq] = useState(null)
+  const [copiedIdx, setCopiedIdx] = useState(null)
+
+  const copyRequest = async (msg, idx) => {
+    await navigator.clipboard.writeText(msg)
+    setCopiedIdx(idx)
+    setTimeout(() => setCopiedIdx(null), 2000)
+  }
+
+  if (!signals.length) return null
+  return (
+    <section className="brief no-print">
+      <div className="brief-head">
+        <h2>Донорский бриф</h2>
+        <span className="brief-badge">пересчитывается на каждом отчёте</span>
+      </div>
+      <div className="brief-grid">
+        {signals.map((s, i) => (
+          <div key={i} className={`signal signal-${s.tone}`}>
+            <h4>{s.title}</h4>
+            <p>{s.text}</p>
+            {s.action && <div className="signal-action">→ {s.action}</div>}
+          </div>
+        ))}
+      </div>
+
+      {requests.length > 0 && (
+        <div className="requests">
+          <h3>Готовые запросы данных к партнёрам</h3>
+          <p className="requests-sub">Сформированы автоматически из пробелов в отчётах — скопируйте и отправьте партнёру.</p>
+          <div className="requests-list">
+            {requests.map((rq, i) => (
+              <div key={i} className="request-item">
+                <button className="request-head" onClick={() => setOpenReq(openReq === i ? null : i)}>
+                  <span><b>{rq.org}</b> · {rq.program}</span>
+                  <span className="request-count">{rq.items.length} пункт(а)</span>
+                </button>
+                {openReq === i && (
+                  <div className="request-body">
+                    <pre>{rq.message}</pre>
+                    <button className="ghost-btn" onClick={() => copyRequest(rq.message, i)}>
+                      {copiedIdx === i ? '✓ Скопировано' : 'Копировать запрос'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}
+
 export default function DonorPortal({ reports, loading, newId, onFeedback }) {
   const [area, setArea] = useState('all')
   const [city, setCity] = useState('all')
@@ -137,16 +219,18 @@ export default function DonorPortal({ reports, loading, newId, onFeedback }) {
       ) : (
         <>
           <section className="stats-row">
-            <StatTile label="Человек охвачено" value={nf(agg.totalReached)} sub="суммарно по программам" />
-            <StatTile label="Программ" value={agg.programs} />
-            <StatTile label="Партнёров-НКО" value={agg.orgs} />
-            <StatTile label="Городов + нац. охват" value={`${Object.keys(agg.cityCounts).length}`} sub={`+ ${agg.nationwide} nationwide`} />
-            <StatTile label="Качество данных" value={`${agg.quality}%`} sub="отчётов без пробелов и высоких рисков"
+            <StatTile label="Человек охвачено" raw={agg.totalReached} sub="суммарно по программам" />
+            <StatTile label="Программ" raw={agg.programs} />
+            <StatTile label="Партнёров-НКО" raw={agg.orgs} />
+            <StatTile label="Городов + нац. охват" raw={Object.keys(agg.cityCounts).length} sub={`+ ${agg.nationwide} nationwide`} />
+            <StatTile label="Качество данных" raw={agg.quality} suffix="%" sub="отчётов без пробелов и высоких рисков"
               tone={agg.quality >= 70 ? 'good' : 'warn'} />
-            <StatTile label="Открытых рисков" value={agg.risks.high + agg.risks.medium + agg.risks.low}
+            <StatTile label="Открытых рисков" raw={agg.risks.high + agg.risks.medium + agg.risks.low}
               sub={`${agg.risks.high} высоких · ${agg.risks.medium} средних`}
               tone={agg.risks.high > 0 ? 'danger' : ''} />
           </section>
+
+          <DonorBrief reports={reports} />
 
           {needsAttention.length > 0 && (
             <section className="attention no-print">

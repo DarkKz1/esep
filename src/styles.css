@@ -247,6 +247,50 @@ textarea { resize: vertical; line-height: 1.5; }
 .stat-tile.danger { border-color: #d99a8a; }
 .stat-tile.danger .stat-value { color: var(--danger); }
 
+/* Донорский бриф — аналитический движок */
+.brief {
+  background: var(--paper-raised); border: 1px solid var(--line);
+  border-radius: 12px; padding: 22px; margin-bottom: 26px;
+}
+.brief-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.brief-head h2 { font-family: var(--font-display); font-size: 20px; }
+.brief-badge {
+  font-size: 11px; color: var(--accent-deep); background: var(--accent-wash);
+  padding: 3px 10px; border-radius: 999px; font-weight: 500;
+}
+.brief-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.signal { border: 1px solid var(--line); border-radius: 10px; padding: 14px 15px; }
+.signal h4 { font-size: 13.5px; margin-bottom: 6px; }
+.signal p { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+.signal-action { font-size: 12px; font-weight: 600; margin-top: 9px; }
+.signal-risk { background: #fbf1ee; border-color: #e7c3b6; }
+.signal-risk h4, .signal-risk .signal-action { color: var(--danger); }
+.signal-gap { background: #faf6ec; border-color: #e7d9b4; }
+.signal-gap h4, .signal-gap .signal-action { color: #927415; }
+.signal-info { background: #eef2f7; border-color: #c4d2e3; }
+.signal-info h4, .signal-info .signal-action { color: #35618f; }
+.signal-good { background: #eff5f1; border-color: #c4dccd; }
+.signal-good h4 { color: var(--accent-deep); }
+
+.requests { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.requests h3 { font-family: var(--font-display); font-size: 16px; margin-bottom: 4px; }
+.requests-sub { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 12px; }
+.requests-list { display: flex; flex-direction: column; gap: 8px; }
+.request-item { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.request-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  width: 100%; background: var(--paper); border: none; cursor: pointer;
+  padding: 11px 14px; font-size: 13.5px; text-align: left; font-family: var(--font-ui);
+}
+.request-head:hover { background: var(--accent-wash); }
+.request-count { font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
+.request-body { padding: 12px 14px; background: var(--paper-raised); }
+.request-body pre {
+  font-family: var(--font-ui); font-size: 12.5px; white-space: pre-wrap;
+  color: var(--ink-soft); background: var(--paper); border: 1px solid var(--line);
+  border-radius: 8px; padding: 12px; margin-bottom: 10px; line-height: 1.5;
+}
+
 /* Требует внимания — уникальный слой */
 .attention {
   background: #fbf4ef; border: 1px solid #e7cdbf; border-radius: 12px;
