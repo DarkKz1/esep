@@ -1,7 +1,7 @@
 # Esep — живой портал импакта для донора и его НКО-партнёров
 
 **Живой деплой:** https://esep-ngo.netlify.app
-**Демо-видео (72 сек):** [submission/esep-demo.mp4](submission/esep-demo.mp4)
+**Демо-видео (~1:50):** [submission/esep-demo.mp4](submission/esep-demo.mp4)
 **Хакатон:** nFactorial «Startup Platform для партнёра», 17–20 июля 2026. Соло-проект.
 
 ## Партнёр и сфера
